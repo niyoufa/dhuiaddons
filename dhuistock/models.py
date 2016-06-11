@@ -22,3 +22,14 @@ class sale_order(osv.osv):
         'order_address_id':fields.char('订单发货地址ID',select=True),
         'order_purchase_time':fields.char('订单支付时间',select=True),
     }
+
+# class dhui_invoice(osv.osv):
+#     _name = "dhui.invoice"
+
+#     _columns = {
+#         'order_id': fields.one2many('sale.order','订单id',required=True,select=True,readonly=True),
+#         'sale_order_count': fields.float('订单数量'),
+#         'partner_id':fields.many2one('res.partner','供应商id'),
+#         'deliver_status':fields.boolean('发货单状态'),
+#     } 
+
