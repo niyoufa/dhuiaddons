@@ -23,6 +23,31 @@
   <!--导航栏菜单-->
   <menuitem sequence="0" id="menu_dhui_shoppingmall" name="东汇商城"/>
 
+  <!--用户-->
+  <menuitem id="menu_dhui_user" parent="menu_dhui_shoppingmall"
+            name="用户"/>
+  <record id="action_dhui_user_all" model="ir.actions.act_window">
+      <field name="name">用户</field>
+      <field name="res_model">dhui.user</field>
+  </record>
+  <record model="ir.ui.view" id="dhuistock_user_list">
+    <field name="name">所有用户</field>
+    <field name="model">dhui.user</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="user_id"/>
+            <field name="nickname"/>
+            <field name="openid"/>
+            <field name="sex"/>
+            <field name="province"/>
+            <field name="city"/>
+        </tree>
+    </field>
+  </record>
+  <menuitem id="menu_dhui_user_all"
+            parent="menu_dhui_user"
+            action="action_dhui_user_all"/>
+
   <!--商品-->
   <menuitem id="menu_dhui_good" parent="menu_dhui_shoppingmall"
             name="商品"/>
@@ -60,7 +85,52 @@
   <!--发货单-->
   <record id="action_menu_dhui_order_deliver" model="ir.actions.act_window">
       <field name="name">发货单</field>
-      <field name="res_model">purchase.order</field>
+      <field name="res_model">dhui.invoice</field>
+  </record>
+
+  <record model="ir.ui.view" id="dhuistock_invoice_list">
+    <field name="name">所有发货单</field>
+    <field name="model">dhui.invoice</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="_id"/>
+            <field name="create_time"/>
+            <field name="sale_order_count"/>
+            <field name="deliver_status"/>
+        </tree>
+    </field>
+  </record>
+
+  <record id="dhuistock_invoice_form" model="ir.ui.view">
+    <field name="name">dhui.invoice.form</field>
+    <field name="model">dhui.invoice</field>
+    <field name="arch" type="xml">
+        <form string="发货单">
+            <group>
+                <field name="_id"/>
+                <field name="create_time"/>
+                <field name="sale_order_count"/>
+                <field name="deliver_status"/>
+            </group>
+            <group>
+                <field name="partner_id"/>
+            </group>
+            <notebook>
+                <page string="发货信息明细">
+                    <field name="detail_info">
+                        <tree string="发货信息明细" editable="bottom">
+                          <field name="sku"></field>
+                          <field name="name"></field>
+                          <field name="total_count"></field>
+                          <field name="invoice_id"></field>
+                          <field name="id"></field>
+                        </tree>
+                    </field>
+                    <div class="oe_clear"/>
+                </page>
+            </notebook>
+        </form>
+    </field>
   </record>
   <menuitem id="menu_dhui_order_deliver"
             parent="menu_dhui_order"
