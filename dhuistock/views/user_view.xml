@@ -1,0 +1,57 @@
+<openerp>
+ <data>
+  <!--用户-->
+  <record id="action_dhui_user_all" model="ir.actions.act_window">
+      <field name="name">用户</field>
+      <field name="res_model">dhui.user</field>
+  </record>
+
+  <record model="ir.ui.view" id="dhuistock_user_list">
+    <field name="name">所有用户</field>
+    <field name="model">dhui.user</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="user_id"/>
+            <field name="nickname"/>
+            <field name="openid"/>
+            <field name="sex"/>
+            <field name="province"/>
+            <field name="city"/>
+        </tree>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="dhuistock_user_form">
+    <field name="name">用户表单</field>
+    <field name="model">dhui.user</field>
+    <field name="arch" type="xml">
+        <form string="用户表单">
+            <label for="user_id"/><field name="user_id"/>
+            <label for="nickname"/><field name="nickname"/>
+            <label for="openid"/><field name="openid"/>
+            <label for="sex"/><field name="sex"/>
+            <label for="province"/><field name="province"/>
+            <label for="city"/><field name="city"/>
+            <label for="dhui_address"/><field name="dhui_address" colspan="4"></field>
+        </form>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="dhui_user_search">
+    <field name="name">查询用户</field>
+    <field name="model">dhui.user</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="user_id"/>
+            <field name="nickname"/>
+        </search>
+    </field>
+  </record>
+
+  <menuitem id="menu_dhui_user" parent="dhuistock.menu_dhui_shoppingmall"
+            name="用户管理"/>
+  <menuitem id="menu_dhui_user_all"
+            parent="menu_dhui_user"
+            action="action_dhui_user_all"/>
+ </data>
+</openerp>
