@@ -1,0 +1,56 @@
+<openerp>
+ <data>
+
+    <!--定义表单视图-->
+    <record model="ir.ui.view" id="dhui_address_form_view">
+        <field name="name">地址表单</field>
+        <field name="type">form</field>
+        <field name="model">dhui.address</field>
+        <field name="arch" type="xml">
+            <form string="地址表单">
+                <label for="area"/><field name="area"/>
+                <label for="city"/><field name="city"/>
+                <label for="district"/><field name="district"/>
+                <label for="detailed_address"/><field name="detailed_address"/>
+                <label for="lng"/><field name="lng"/>
+                <label for="lat"/><field name="lat"/>
+                <label for="add_time"/><field name="add_time"/>
+                <label for="mod_time"/><field name="mod_time"/>
+                <label for="is_default_flag"/><field name="is_default_flag"/>
+                <labe  for="user_id"/><field name="user_id"/>
+                <label for="remark"/><field name="remark"/>
+            </form>
+        </field>
+    </record>
+    <!--定义列表视图-->
+    <record model="ir.ui.view" id="dhui_address_tree_view">
+        <field name="name">地址列表</field>
+        <field name="type">tree</field>
+        <field name="model">dhui.address</field>
+        <field name="arch" type="xml">
+            <tree string="课程列表">
+                <field name="area"/>
+                <field name="city"/>
+                <field name="district"/>
+                <field name="detailed_address"/>
+                <field name="lng"/>
+                <field name="lat"/>
+                <field name="add_time"/>
+                <field name="mod_time"/>
+                <field name="is_default_flag"/>
+                <field name="remark"/>
+            </tree>
+        </field>
+    </record>
+    <!--定义视图动作-->
+    <record model="ir.actions.act_window"  id="action_dhui_address">
+        <field name="name">地址</field>    <!--这个字符串即课程对应列表或编辑界面的标题-->
+        <field name="res_model">dhui.address</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="dhui_address_tree_view"/>
+    </record>
+    <!--定义菜单-->
+    <menuitem id="dhui_address_item_menu" name="地址" parent="menu_dhui_user" action="action_dhui_address"/>
+ </data>
+</openerp>
