@@ -1,0 +1,43 @@
+<openerp>
+    <data>
+        <!--定义表单视图-->
+        <record model="ir.ui.view" id="dhui_kuaidi_form_view">
+            <field name="name">快递表单</field>
+            <field name="type">form</field>
+            <field name="model">dhui.kuaidi</field>
+            <field name="arch" type="xml">
+                <form string="快递表单">
+                    <label for="_id"/><field name="_id"/>
+                    <label for="status"/><field name="status"/>
+                    <label for="message"/><field name="message"/>
+                    <label for="billstatus"/><field name="billstatus"/>
+                </form>
+            </field>
+        </record>
+        <!--定义列表视图-->
+        <record model="ir.ui.view" id="dhui_kuaidi_tree_view">
+            <field name="name">快递列表</field>
+            <field name="type">tree</field>
+            <field name="model">dhui.kuaidi</field>
+            <field name="arch" type="xml">
+                <tree string="快递列表">
+                    <field name="_id"/>
+                    <field name="status"/>
+                    <field name="last_result"/>
+                    <field name="message"/>
+                    <field name="billstatus"/>
+                </tree>
+            </field>
+        </record>
+        <!--定义视图动作-->
+        <record model="ir.actions.act_window"  id="action_dhui_kuaidi">
+            <field name="name">快递</field>
+            <field name="res_model">dhui.kuaidi</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="dhui_kuaidi_tree_view"/>
+        </record>
+        <!--定义菜单-->
+        <menuitem id="dhui_kuaidi_item_menu" name="快递" parent="menu_dhui_user" action="action_dhui_kuaidi"/>
+    </data>
+</openerp>

@@ -1,60 +1,6 @@
 <openerp>
  <data>
 
-    <record id="action_dhui_good_all" model="ir.actions.act_window">
-        <field name="name">所有商品</field>
-        <field name="model">product.template</field>
-    </record>
-
-    <record model="ir.ui.view" id="dhuistock_good_list">
-        <field name="name">所有商品</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_tree_view"/>
-        <field name="arch" type="xml">
-            <field name="name" position="before">
-                <field name="sku"/>
-            </field>
-            <field name="uom_id" position="after">
-                <field name="dhui_user_id"/>
-            </field>
-        </field>
-    </record>
-
-  <!--导航栏菜单-->
-  <menuitem sequence="0" id="menu_dhui_shoppingmall" name="东汇商城"/>
-
-  <!--用户-->
-  <menuitem id="menu_dhui_user" parent="menu_dhui_shoppingmall"
-            name="用户"/>
-  <record id="action_dhui_user_all" model="ir.actions.act_window">
-      <field name="name">用户</field>
-      <field name="res_model">dhui.user</field>
-  </record>
-  <record model="ir.ui.view" id="dhuistock_user_list">
-    <field name="name">所有用户</field>
-    <field name="model">dhui.user</field>
-    <field name="arch" type="xml">
-        <tree>
-            <field name="user_id"/>
-            <field name="nickname"/>
-            <field name="openid"/>
-            <field name="sex"/>
-            <field name="province"/>
-            <field name="city"/>
-        </tree>
-    </field>
-  </record>
-  <menuitem id="menu_dhui_user_all"
-            parent="menu_dhui_user"
-            action="action_dhui_user_all"/>
-
-  <!--商品-->
-  <menuitem id="menu_dhui_good" parent="menu_dhui_shoppingmall"
-            name="商品"/>
-  <menuitem id="menu_dhui_good_all"
-            parent="menu_dhui_good"
-            action="action_dhui_good_all"/>
-
   <!--订单-->
   <record id="action_menu_dhui_order_all" model="ir.actions.act_window">
       <field name="name">所有订单</field>
@@ -75,9 +21,34 @@
     </field>
   </record>
 
+  <!--view_order_form-->
+  <record model="ir.ui.view" id="dhuistock_order_form">
+    <field name="name">所有订单</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+        <field name="state" position="after">
+            <label for="dhui_user_id"/><field name="dhui_user_id"/>
+        </field>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="dhuistock_order_search">
+    <field name="name">查询订单</field>
+    <field name="model">sale.order</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="state"/>
+            <field name="amount_total"/>
+            <field name="order_customer_id"/>
+            <field name="order_address_id"/>
+        </search>
+    </field>
+  </record>
+
   <menuitem id="menu_dhui_order"
-            parent="menu_dhui_shoppingmall"
-            name="订单"/>
+            parent="dhuistock.menu_dhui_shoppingmall"
+            name="订单管理"/>
   <menuitem id="menu_dhui_order_list_all"
             parent="menu_dhui_order"
             action="action_menu_dhui_order_all"/>
@@ -92,7 +63,7 @@
     <field name="name">所有发货单</field>
     <field name="model">dhui.invoice</field>
     <field name="arch" type="xml">
-        <tree>
+        <tree default_order="create_time desc">
             <field name="_id"/>
             <field name="create_time"/>
             <field name="sale_order_count"/>
@@ -106,6 +77,9 @@
     <field name="model">dhui.invoice</field>
     <field name="arch" type="xml">
         <form string="发货单">
+            <header>
+                <button name="print_invoice" string="打印" type="object" class="oe_highlight" groups="base.group_user"/>
+            </header>
             <group>
                 <field name="_id"/>
                 <field name="create_time"/>

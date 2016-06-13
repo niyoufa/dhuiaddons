@@ -25,7 +25,12 @@
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        'dhuistock_view.xml',
+        'views/nav_view.xml',
+        'views/user_view.xml',
+        'views/address_view.xml',
+        'views/order_view.xml',
+        'views/good_view.xml',
+        # 'views/kuaidi_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

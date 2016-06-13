@@ -1,0 +1,6 @@
+<openerp>
+    <data>
+        <!--导航栏菜单-->
+        <menuitem sequence="0" id="menu_dhui_shoppingmall" name="东汇商城"/>
+    </data>
+</openerp>
