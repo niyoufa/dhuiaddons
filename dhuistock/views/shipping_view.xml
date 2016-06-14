@@ -1,0 +1,46 @@
+<openerp>
+ <data>
+
+    <!--定义表单视图-->
+    <record model="ir.ui.view" id="dhui_address_form_view">
+        <field name="name">物流表单</field>
+        <field name="type">form</field>
+        <field name="model">dhui.shipping</field>
+        <field name="arch" type="xml">
+            <form string="物流表单">
+                <label for="_id"/><field name="_id"/>
+                <label for="track"/><field name="track"/>
+                <label for="company"/><field name="company"/>
+                <label for="number"/><field name="number"/>
+                <label for="shipping_address"/><field name="shipping_address"/>
+                <label for="add_time"/><field name="add_time"/>
+                <label for="orders"/><field name="orders" colspan="4"/>
+            </form>
+        </field>
+    </record>
+    <!--定义列表视图-->
+    <record model="ir.ui.view" id="dhui_shipping_tree_view">
+        <field name="name">物流列表</field>
+        <field name="type">tree</field>
+        <field name="model">dhui.shipping</field>
+        <field name="arch" type="xml">
+            <tree string="物流列表">
+                <field name="_id"/>
+                <field name="number"/>
+                <field name="company"/>
+                <field name="add_time"/>
+            </tree>
+        </field>
+    </record>
+    <!--定义视图动作-->
+    <record model="ir.actions.act_window"  id="action_dhui_shipping">
+        <field name="name">物流</field>    <!--这个字符串即课程对应列表或编辑界面的标题-->
+        <field name="res_model">dhui.shipping</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="dhui_shipping_tree_view"/>
+    </record>
+    <!--定义菜单-->
+    <menuitem id="dhui_shipping_item_menu" name="物流单" parent="menu_dhui_order" action="action_dhui_shipping"/>
+ </data>
+</openerp>
