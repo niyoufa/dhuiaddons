@@ -9,6 +9,7 @@ class product_template(osv.osv):
     _columns = {
         'sku': fields.char('商品码', select=True),
         'dhui_user_id': fields.char('供应商ID', select=True),
+        'partner_id':fields.many2one('res.partner',string='供应商'),
     }
 
 class sale_order(osv.osv):
@@ -22,7 +23,15 @@ class sale_order(osv.osv):
         'order_purchase_time':fields.char('订单支付时间',select=True),
         'dhui_user_id':fields.many2one('dhui.user',string='下单用户'),
         'shipping_id':fields.many2one('dhui.shipping',string='快递编号'),
+        'shipping_status':fields.selection((
+            ('1',"未发货"),
+            ('10',"进行中"),
+            ('20',"已完成"),
+            ('30',"已取消"),
+        ),"发货状态"),
     }
+
+# class sale
 
 class dhui_user(osv.osv):
     _name = "dhui.user"
@@ -84,27 +93,34 @@ class dhui_invoice(osv.osv):
         [invoice] = self.browse(cr,uid,record_ids)
         print invoice
 
-    class dhui_purchase_user_line(osv.osv):
-        _name = "dhui.purchase.user.line"
+class dhui_purchase_user_line(osv.osv):
+    _name = "dhui.purchase.user.line"
 
-        _columns = {
-            'count': fields.integer('数量'),
-            'product_id': fields.many2one('product.product', '商品id'),
-            'user_id': fields.many2one('dhui.user', string='东汇用户'),
-            'purchase_id': fields.many2one('dhui.purchase', string='采购单id'),
-        }
+    _columns = {
+        'count': fields.integer('数量'),
+        'product_id': fields.many2one('product.product', '商品id'),
+        'user_id': fields.many2one('dhui.user', string='东汇用户'),
+        'purchase_id': fields.many2one('dhui.purchase', string='采购单id'),
+    }
 
-    class dhui_purchase(osv.osv):
-        _name = "dhui.purchase"
+class dhui_purchase(osv.osv):
+    _name = "dhui.purchase"
 
-        _columns = {
-            'sku': fields.char('商品码'),
-            'name': fields.char('商品名称'),
-            'total_count': fields.float('发货数量'),
-            'partner_id': fields.many2one('res.partner', string='供应商id', required=True),
-            'invoice_id': fields.many2one('dhui.invoice', string='发货单id'),
-            'user_lines': fields.one2many('dhui.purchase.user.line', 'purchase_id', string='东汇商城用户'),
-        }
+    _columns = {
+        'sku': fields.char('商品码'),
+        'name': fields.char('商品名称'),
+        'total_count': fields.float('发货数量'),
+        'partner_id': fields.many2one('res.partner', string='供应商id', required=True),
+        'invoice_id': fields.many2one('dhui.invoice', string='发货单id'),
+        'user_lines': fields.one2many('dhui.purchase.user.line', 'purchase_id', string='东汇商城用户'),
+    }
+
+class dhui_order_invoice(osv.osv):
+    _name = "dhui.order.invoice"
+
+    _columns = {
+
+    }
 
 ##########
 # 物流单
