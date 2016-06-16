@@ -12,12 +12,28 @@
     <field name="model">sale.order</field>
     <field name="inherit_id" ref="sale.view_order_tree"/>
     <field name="arch" type="xml">
-        <field name="state" position="after">
+        <field name="name" position="replace">
+            <field name="order_id"/>
+        </field>
+        <field name="partner_id" position="replace">
+            <field name="add_time"></field>
+        </field>
+        <field name="add_time" position="after">
+            <field name="goods_amount"/>
+            <field name="order_status"/>
             <field name="shipping_status"/>
-            <field name="dhui_user_id"/>
-            <field name="_id"/>
             <field name="order_purchase_time"/>
         </field>
+
+        <field name="user_id" position="replace">
+            <field name="contact_name"></field>
+        </field>
+        <field name="amount_total" position="replace">
+            <field name="pay_status"></field>
+        </field>
+        <!--<field name="state" position="replace">-->
+            <!--<field name="money_paid"></field>-->
+        <!--</field>-->
     </field>
   </record>
 
