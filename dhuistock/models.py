@@ -17,21 +17,82 @@ class sale_order(osv.osv):
     _inherit = 'sale.order'
 
     _columns = {
-        '_id':fields.char('订单ID',select=True),
         'order_customer_id':fields.char('下单用户ID',select=True),
         'order_address_id':fields.char('订单发货地址ID',select=True),
         'order_purchase_time':fields.char('订单支付时间',select=True),
         'dhui_user_id':fields.many2one('dhui.user',string='下单用户'),
         'shipping_id':fields.many2one('dhui.shipping',string='快递编号'),
+
+        #东汇订单信息
+        '_id': fields.char('订单ID', select=True),
+        'address_id':fields.char('订单地址id',select=True),
+        'goldbean':fields.integer('东汇金豆数量'),
+        'pay_time':fields.char('支付时间'),
+        'promotion_id':fields.char(),
+        'contact_name':fields.char('联系人名称'),
+        'receive_wx_notify':fields.boolean('收到微信通知'),
+        'pay_type':fields.selection((
+            ('cod',"货到付款"),
+            ('weixin',"货到付款"),
+            ('alipay',"支付宝"),
+            ('dhuidou',"东汇豆"),
+        ),'支付类型'),
+        'customer_user_id':fields.char('客户'),
+        'goods_amount':fields.float('金额'),
+        'order_status':fields.selection((
+            ('0',"待支付"),
+            ('1', "服务中"),
+            ('2', "已取消"),
+            ('3', '已完成'),
+            ('4', '退款中'),
+            ('5', '已关闭'),
+        ),'订单状态'),
+        'pay_status':fields.selection((
+            ('1', "未支付"),
+            ('2', "已支付"),
+            ('3', '货到付款'),
+            ('4', '东汇豆支付'),
+            ('5', '部分支付'),
+        ),'支付状态'),
+        'money_paid':fields.float('支付金额'),
+        'order_id':fields.char('订单号'),
+        'origin_code':fields.char(),
+        'discount':fields.float('优惠'),
         'shipping_status':fields.selection((
             ('1',"未发货"),
             ('10',"进行中"),
             ('20',"已完成"),
             ('30',"已取消"),
         ),"发货状态"),
+        'odoo_address_id': fields.many2one('sale.order.address'),
+        'order_invoice':fields.char(),
+        'add_time':fields.char('下单时间'),
+        'delivery_time':fields.char('发货时间'),
+        'remark':fields.char(),
+        'mobile':fields.char('电话'),
+        'order_goods':fields.char(),
+        'edit_times':fields.integer(),
+        'shipping_fee':fields.char("运费"),
     }
 
-# class sale
+class sale_order_address(osv.osv):
+    _name = 'sale.order.address'
+
+    _columns = {
+        'contact_name': fields.char('联系人'),
+        'contact_mobile': fields.char('联系电话'),
+        'area': fields.char('省份'),
+        'city': fields.char('市'),
+        'district': fields.char('区'),
+        'remark': fields.char('备注'),
+        'detailed_address': fields.char('详细地址'),
+        'lng': fields.float('经度', digits=(16, 2)),
+        'lat': fields.float('纬度', digits=(16, 2)),
+        'add_time': fields.char('添加时间'),
+        'mod_time': fields.char('修改时间'),
+        'is_default_flag': fields.boolean('默认地址'),
+        "order_id":fields.char(),
+    }
 
 class dhui_user(osv.osv):
     _name = "dhui.user"
