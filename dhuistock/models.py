@@ -152,7 +152,7 @@ class dhui_invoice(osv.osv):
     #导出发货单
     def print_invoice(self, cr, uid, record_ids, *args, **kwargs):
         [invoice] = self.browse(cr,uid,record_ids)
-        print invoice
+        return invoice
 
 class dhui_purchase_user_line(osv.osv):
     _name = "dhui.purchase.user.line"

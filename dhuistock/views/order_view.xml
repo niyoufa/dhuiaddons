@@ -69,7 +69,7 @@
             parent="menu_dhui_order"
             action="action_menu_dhui_order_all"/>
 
-  <!--发货单-->
+  <!--商品发货单-->
   <record id="action_menu_dhui_order_deliver" model="ir.actions.act_window">
       <field name="name">商品发货单</field>
       <field name="res_model">dhui.invoice</field>
@@ -84,6 +84,7 @@
             <field name="create_time"/>
             <field name="partner_id"/>
             <field name="deliver_status"/>
+            <button name="print_invoice" string="导出" type="object" class="oe_highlight" groups="base.group_user"/>
         </tree>
     </field>
   </record>
@@ -94,7 +95,7 @@
     <field name="arch" type="xml">
         <form string="发货单">
             <header>
-                <button name="print_invoice" string="打印" type="object" class="oe_highlight" groups="base.group_user"/>
+                <button name="print_invoice" string="导出" type="object" class="oe_highlight" groups="base.group_user"/>
             </header>
             <group>
                 <field name="_id"/>
