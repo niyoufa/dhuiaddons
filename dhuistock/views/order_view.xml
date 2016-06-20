@@ -31,9 +31,6 @@
         <field name="amount_total" position="replace">
             <field name="pay_status"></field>
         </field>
-        <!--<field name="state" position="replace">-->
-            <!--<field name="money_paid"></field>-->
-        <!--</field>-->
     </field>
   </record>
 
@@ -84,7 +81,6 @@
             <field name="create_time"/>
             <field name="partner_id"/>
             <field name="deliver_status"/>
-            <button name="print_invoice" string="导出" type="object" class="oe_highlight" groups="base.group_user"/>
         </tree>
     </field>
   </record>
@@ -94,9 +90,6 @@
     <field name="model">dhui.invoice</field>
     <field name="arch" type="xml">
         <form string="发货单">
-            <header>
-                <button name="print_invoice" string="导出" type="object" class="oe_highlight" groups="base.group_user"/>
-            </header>
             <group>
                 <field name="_id"/>
                 <field name="create_time"/>
