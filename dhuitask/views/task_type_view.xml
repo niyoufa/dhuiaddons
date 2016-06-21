@@ -1,0 +1,50 @@
+<openerp>
+ <data>
+    <!--定义表单视图-->
+    <record model="ir.ui.view" id="dhuitask_task_type_form_view">
+        <field name="name">任务阶段表单</field>
+        <field name="type">form</field>
+        <field name="model">dhuitask.type</field>
+        <field name="arch" type="xml">
+            <form string="Task Stage">
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                    </group>
+                    <group>
+                        <field name="case_default"/>
+                        <field name="fold"/>
+                    </group>
+                </group>
+                <field name="description" placeholder="Add a description..."/>
+            </form>
+        </field>
+    </record>
+    <!--定义列表视图-->
+    <record model="ir.ui.view" id="dhuitask_task_type_tree_view">
+        <field name="name">任务阶段列表</field>
+        <field name="type">tree</field>
+        <field name="model">dhuitask.type</field>
+        <field name="arch" type="xml">
+                <tree string="Task Stage">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="fold"/>
+                </tree>
+        </field>
+    </record>
+    <!--定义视图动作-->
+    <record model="ir.actions.act_window"  id="action_dhuitask_task_type">
+        <field name="name">任务阶段</field> 
+        <field name="res_model">dhuitask.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="dhuitask_task_type_tree_view"/>
+    </record>
+    <!--定义菜单-->
+    <menuitem id="menu_dhuitask" name="任务管理"/>
+    <menuitem id="menu_dhuitask_task" name="任务" parent="menu_dhuitask"/>
+    <menuitem id="menu_dhuitask_task_type_item" name="任务阶段" parent="dhuitask.menu_dhuitask_task" action="action_dhuitask_task_type"/>
+ </data>
+</openerp>
