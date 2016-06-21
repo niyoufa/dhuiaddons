@@ -12,11 +12,24 @@
     <field name="model">sale.order</field>
     <field name="inherit_id" ref="sale.view_order_tree"/>
     <field name="arch" type="xml">
-        <field name="state" position="after">
-            <field name="_id"/>
-            <field name="order_customer_id"/>
-            <field name="order_address_id"/>
+        <field name="name" position="replace">
+            <field name="order_id"/>
+        </field>
+        <field name="partner_id" position="replace">
+            <field name="add_time"></field>
+        </field>
+        <field name="add_time" position="after">
+            <field name="goods_amount"/>
+            <field name="order_status"/>
+            <field name="shipping_status"/>
             <field name="order_purchase_time"/>
+        </field>
+
+        <field name="user_id" position="replace">
+            <field name="contact_name"></field>
+        </field>
+        <field name="amount_total" position="replace">
+            <field name="pay_status"></field>
         </field>
     </field>
   </record>
@@ -53,20 +66,20 @@
             parent="menu_dhui_order"
             action="action_menu_dhui_order_all"/>
 
-  <!--发货单-->
+  <!--商品发货单-->
   <record id="action_menu_dhui_order_deliver" model="ir.actions.act_window">
-      <field name="name">发货单</field>
+      <field name="name">商品发货单</field>
       <field name="res_model">dhui.invoice</field>
   </record>
 
   <record model="ir.ui.view" id="dhuistock_invoice_list">
-    <field name="name">所有发货单</field>
+    <field name="name">商品发货单列表</field>
     <field name="model">dhui.invoice</field>
     <field name="arch" type="xml">
         <tree default_order="create_time desc">
             <field name="_id"/>
             <field name="create_time"/>
-            <field name="sale_order_count"/>
+            <field name="partner_id"/>
             <field name="deliver_status"/>
         </tree>
     </field>
@@ -77,9 +90,6 @@
     <field name="model">dhui.invoice</field>
     <field name="arch" type="xml">
         <form string="发货单">
-            <header>
-                <button name="print_invoice" string="打印" type="object" class="oe_highlight" groups="base.group_user"/>
-            </header>
             <group>
                 <field name="_id"/>
                 <field name="create_time"/>
@@ -90,9 +100,9 @@
                 <field name="partner_id"/>
             </group>
             <notebook>
-                <page string="发货信息明细">
+                <page string="商品发货信息明细">
                     <field name="detail_info">
-                        <tree string="发货信息明细" editable="bottom">
+                        <tree string="商品发货信息明细" editable="bottom">
                           <field name="sku"></field>
                           <field name="name"></field>
                           <field name="total_count"></field>

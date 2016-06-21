@@ -10,13 +10,12 @@
     <field name="name">所有用户</field>
     <field name="model">dhui.user</field>
     <field name="arch" type="xml">
-        <tree>
-            <field name="user_id"/>
+        <tree string="商城用户">
             <field name="nickname"/>
-            <field name="openid"/>
             <field name="sex"/>
             <field name="province"/>
             <field name="city"/>
+            <field name="create_date" string="日期"/>
         </tree>
     </field>
   </record>
@@ -26,13 +25,21 @@
     <field name="model">dhui.user</field>
     <field name="arch" type="xml">
         <form string="用户表单">
-            <label for="user_id"/><field name="user_id"/>
-            <label for="nickname"/><field name="nickname"/>
-            <label for="openid"/><field name="openid"/>
-            <label for="sex"/><field name="sex"/>
-            <label for="province"/><field name="province"/>
-            <label for="city"/><field name="city"/>
-            <label for="dhui_address"/><field name="dhui_address" colspan="4"></field>
+                <group colspan="4" col="6">
+                    <group colspan="2" rowspan="1" col="2" string="用户基本信息">
+                        <field name="user_id"/>
+                        <field name="nickname"/>
+                        <field name="openid"/>
+                        <field name="sex"/>
+                    </group>
+                    <group colspan="4" rowspan="1" col="2" string="用户地址信息">
+                        <field name="province"/>
+                        <field name="city"/>
+                    </group>
+                    <group colspan="6" col="1">
+                        <field name="dhui_address" colspan="4"></field>
+                    </group>
+                </group>
         </form>
     </field>
   </record>
