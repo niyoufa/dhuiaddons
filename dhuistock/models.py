@@ -5,6 +5,7 @@ from openerp.osv import fields, osv
 class product_template(osv.osv):
     _name = 'product.template'
     _inherit = 'product.template'
+    _order = "create_date desc"
 
     _columns = {
         'sku': fields.char('商品码', select=True),
@@ -96,6 +97,7 @@ class sale_order_address(osv.osv):
 
 class dhui_user(osv.osv):
     _name = "dhui.user"
+    _order = "create_date desc"
 
     _columns = {
         'nickname': fields.char('昵称'),
