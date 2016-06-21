@@ -134,7 +134,7 @@ class dhui_kuaidi_lastresult(osv.osv):
 class dhui_kuaidi(osv.osv):
     _name = "dhui.kuaidi"
 
-    _column = {
+    _columns = {
         '_id': fields.char('物流单ID',required=True,select=True,readonly=True),
         'status':fields.char('物流单当前状态',required=True),
         'last_result':fields.one2many('dhui.kuaidi.lastresult','kuaidi_id',string='物流明细'),

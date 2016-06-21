@@ -30,7 +30,7 @@
         'views/address_view.xml',
         'views/order_view.xml',
         'views/good_view.xml',
-        # 'views/kuaidi_view.xml',
+        'views/kuaidi_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
