@@ -3,7 +3,7 @@
 
     <!--定义表单视图-->
     <record model="ir.ui.view" id="dhuitask_task_form_view">
-        <field name="name">任务表单</field>
+        <field name="name">表单</field>
         <field name="type">form</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>

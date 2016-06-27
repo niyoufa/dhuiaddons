@@ -111,8 +111,6 @@ class dhuitask(osv.osv):
         result = json.loads(f.read())
         return result
 
-
-
 class dhuitask_type(osv.osv):
     _name = 'dhuitask.type'
     _inherit = 'project.task.type'
