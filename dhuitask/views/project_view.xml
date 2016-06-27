@@ -2,40 +2,39 @@
  <data>
 
     <!--定义表单视图-->
-    <record model="ir.ui.view" id="dhuitask_task_form_view">
-        <field name="name">表单</field>
+    <record model="ir.ui.view" id="dhuitask_project_form_view">
+        <field name="name">群组表单</field>
         <field name="type">form</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
-            <field name="categ_ids" position="replace">
-                <field name="group_type"></field>
-            </field>
+            <form></form>
         </field>
     </record>
     <!--定义列表视图-->
-    <record model="ir.ui.view" id="dhuitask_task_tree_view">
-        <field name="name">任务列表</field>
+    <record model="ir.ui.view" id="dhuitask_project_tree_view">
+        <field name="name">群组列表</field>
         <field name="type">tree</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_tree2"></field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project"></field>
         <field name="arch" type="xml">
-            <field name="name" position="after">
-                <field name="group_type"></field>
+            <field name="name" position="replace">
+                <field name="name" string="群组名称"/>
+            </field>
+            <field name="user_id" position="replace">
+                <field name="user_id" string="群主"/>
             </field>
         </field>
     </record>
     <!--定义视图动作-->
-    <record model="ir.actions.act_window"  id="action_dhuitask_task">
-        <field name="name">任务</field>    <!--这个字符串即课程对应列表或编辑界面的标题-->
-        <field name="res_model">project.task</field>
+    <record model="ir.actions.act_window"  id="action_dhuitask_project">
+        <field name="name">群组</field>    <!--这个字符串即课程对应列表或编辑界面的标题-->
+        <field name="res_model">project.project</field>
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
-        <field name="view_id" ref="dhuitask_task_tree_view"/>
+        <field name="view_id" ref="dhuitask_project_tree_view"/>
     </record>
     <!--定义菜单-->
-    <menuitem id="menu_dhuitask" name="任务管理"/>
-    <menuitem id="menu_dhuitask_task" name="任务" parent="menu_dhuitask"/>
-    <menuitem id="menu_dhuitask_task_item" name="任务" parent="menu_dhuitask_task" action="action_dhuitask_task"/>
+    <menuitem id="menu_dhuitask_project_item" name="群组" parent="menu_dhuitask_task" action="action_dhuitask_project"/>
  </data>
 </openerp>

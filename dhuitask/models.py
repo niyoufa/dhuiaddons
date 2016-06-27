@@ -7,6 +7,7 @@ import requests
 import urllib
 import urllib2
 import cookielib
+from openerp.tools.translate import _
 
 http_addr = "http://localhost:10001"
 dhui100_api = {
@@ -27,17 +28,65 @@ class dhuitask(osv.osv):
     _inherit = 'project.task'
 
     _columns = {
-        'group_type': fields.many2one('dhuitask.type','群组类型'),
+        'group_type': fields.many2one('dhuitask.type','任务类型'),
+        'members': fields.many2many('res.users', 'project_task_rel', 'task_id', 'uid', '任务成员'),
     }
+
+    def onchange_members(self,cr,uid,ids,members,context=None):
+        # [(6, 0, [5186, 4533, 4247])]
+        if len(members) == 0 :
+            return
+        if len(members[0][2]) == 0:
+            return
+        member_ids = members[0][2]
+        if len(ids) == 0 :
+            return
+        [task] = super(dhuitask,self).browse(cr,uid,ids)
+        project = task.project_id
+        project_members = project.members
+        project_member_ids = [ member.id for member in project_members]
+        for m_id in member_ids:
+            if not m_id in project_member_ids:
+                raise osv.except_osv(_('Warning!'),_("该用户不在群组: '%s'中!") % (project.name,))
 
     def write(self, cr, uid, ids, vals, context=None):
         context = context or {}
+        [task] = super(dhuitask,self).browse(cr,uid,ids)
+
+        if vals.has_key("members"):
+            task_member_ids = vals["members"][0][2]
+        else :
+            task_member_ids = []
+
+        project = task.project_id
+        project_members = project.members
+        project_member_ids = [ member.id for member in project_members]
+        
+        if len(list(set(project_member_ids + task_member_ids))) > len(project_member_ids):
+            raise osv.except_osv(_('Warning!'),_("存在任务成员不在群组: '%s'中,请选择正确的任务成员!") % (project.name,))
+
         res = super(dhuitask, self).write(cr, uid, ids, vals, context=context)
         return res
 
     def create(self, cr, uid, vals, context=None):
         context = context or {}
         res_id = super(dhuitask, self).create(cr, uid, vals, context=context)
+
+        [task] = super(dhuitask,self).browse(cr,uid,[res_id])
+
+        if vals.has_key("members"):
+            task_member_ids = vals["members"][0][2]
+        else :
+            task_member_ids = []
+
+        project = task.project_id
+        project_members = project.members
+        project_member_ids = [ member.id for member in project_members]
+        
+        if len(list(set(project_member_ids + task_member_ids))) > len(project_member_ids):
+            raise osv.except_osv(_('Warning!'),_("存在任务成员不在群组: '%s'中,请选择正确的任务成员!") % (project.name,))
+
+        
         user_obj = self.pool.get('res.users')
         user = user_obj.read(cr, uid, [uid], context=context)[0]
         user_id = user['user_id'] or ""
@@ -115,7 +164,12 @@ class dhuitask_type(osv.osv):
     _name = 'dhuitask.type'
     _inherit = 'project.task.type'
 
-    _columns = {}
+    _columns = {
+        "type":fields.selection((
+                ("project","群组"),
+                ("task","任务"),
+            ),"类型")
+    }
 
 class res_users(osv.osv):
     _name = 'res.users'
