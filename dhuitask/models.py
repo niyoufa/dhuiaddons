@@ -1,34 +1,67 @@
 # -*- coding: utf-8 -*-
 
-from openerp.osv import osv, fields
 import pdb
 import json
-import requests
-import urllib
-import urllib2
-import cookielib
+
+from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
-http_addr = "http://localhost:10001"
-dhui100_api = {
-    "create":"/api/group/create",
-    "quit":"/api/group/quit",
-    "dismiss":"/api/group/dismiss",
-    "join":"/api/group/join",
-}
+from dhuiaddons.dhuitask.rong import Rong
 
 class dhuiproject(osv.osv):
     _inherit = 'project.project'
 
     _columns = {
-        'group_type':fields.many2one('dhuitask.type','群组类型'),
+        'group_type':fields.many2one('dhuitask.type','群组类型',domain=[('type','=','project')]),
     }
+
+    def create(self,cr,uid,vals,context=None):
+        context = context or {}
+        res = super(dhuiproject, self).create(cr, uid, vals, context=context)
+        user_obj = self.pool.get('res.users')
+        user = user_obj.read(cr, uid, [uid], context=context)[0]
+        user_id = user['user_id'] or ""
+        try:
+            result = Rong.sync_rongyun_group_create(cr, user_id, vals, context,res_id=res,type="group")
+        except Exception ,e :
+            print e
+
+        return res
+
+    def write(self,cr,uid,ids,vals,context=None):
+        context = context or {}
+        res = super(dhuiproject, self).write(cr,uid,ids,vals,context=context)
+        return res
+
+    def unlink(self,cr,uid,ids,context=None):
+        context = context or {}
+        res = super(dhuiproject,self).unlink(cr,uid,ids,context=context)
+
+        user_obj = self.pool.get('res.users')
+        user = user_obj.read(cr,uid,[uid],context=context)[0]
+        user_id = user["user_id"] or ""
+        try:
+            result = Rong.sync_rongyun_group_delete(cr,user_id,ids)
+        except Exception ,e :
+            print e
+
+        return res
+
+    def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None):
+        context = context or {}
+        res = super(dhuiproject, self).search(cr,uid,args,offset=offset,limit=limit,order=order,context=context)
+        return res
+
+    def read(self,cr,uid,ids,fields=None,context=None,load='_classic_read'):
+        context = context or {}
+        res = super(dhuiproject, self).read(cr,uid,ids,fields=fields,context=context,load=load)
+        return res
 
 class dhuitask(osv.osv):
     _inherit = 'project.task'
 
     _columns = {
-        'group_type': fields.many2one('dhuitask.type','任务类型'),
+        'group_type': fields.many2one('dhuitask.type','任务类型',domain=[('type','=','task')]),
         'members': fields.many2many('res.users', 'project_task_rel', 'task_id', 'uid', '任务成员'),
     }
 
@@ -91,73 +124,29 @@ class dhuitask(osv.osv):
         user = user_obj.read(cr, uid, [uid], context=context)[0]
         user_id = user['user_id'] or ""
         try:
-            result = self.sync_rongyun_group_create(cr, user_id, vals, context,res_id=res_id)
+            result = Rong.sync_rongyun_group_create(cr, user_id, vals, context,res_id=res_id,type="task")
         except Exception ,e :
             print e
+
         return res_id
+
+    def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None):
+        context = context or {}
+        res = super(dhuitask, self).search(cr,uid,args,offset=offset,limit=limit,order=order,context=context)
+        return res
 
     def unlink(self, cr, uid, ids, context=None):
         context = context or None
         super(dhuitask,self).unlink(cr, uid,ids,context)
+
         user_obj = self.pool.get('res.users')
         user = user_obj.read(cr,uid,[uid],context=context)[0]
         user_id = user["user_id"] or ""
         try:
-            result = self.sync_rongyun_group_delete(cr,user_id,ids)
+            result = Rong.sync_rongyun_group_delete(cr,user_id,ids)
         except Exception ,e :
             print e
-        return result
 
-    # 同步融云 创建群组
-    def sync_rongyun_group_create(self,cr,user_id,vals,*args,**options):
-        group_name = vals['name']
-        group_name = group_name.encode("utf-8")
-        task_id = options.get("res_id",0)
-        #调用dhui100 接口
-        url = http_addr + dhui100_api["create"]
-        data  ={"user_id":user_id,"group_name":group_name,"task_id":task_id}
-        result = self.post(url=url, data=data)
-        return result
-
-    #同步融云 删除群组
-    def sync_rongyun_group_delete(self,cr,user_id,vals,*args,**options):
-        task_id = options.get("res_id", 0)
-        # 调用dhui100 接口
-        url = http_addr + dhui100_api["dismiss"]
-        data = {"user_id": user_id, "task_id": task_id}
-        result = self.post(url=url, data=data)
-        return result
-
-    def post(*args, **options):
-        result = {}
-        url = options.get('url', None)
-        data = options.get('data', {})
-        if not url:
-            raise "url error"
-        if type(data) != type({}):
-            raise "request data error"
-        try :
-            opener = urllib2.build_opener()
-            data = urllib.urlencode(data)
-            response = opener.open(url, data).read()
-            response = json.loads(response)
-            if response["meta"]["code"] != 200 :
-                return {"success": 0, "return_code": 'error', "error_msg": "error"}
-            else :
-                response.update({"success":1,"return_code":"success"})
-                return response
-        except Exception ,e :
-            return {"success":0,"return_code":str(e),"error_msg":"error"}
-
-    def get(*args, **options):
-        url = options.get('url', None)
-        data = options.get('data', {})
-        if not url:
-            raise "url error"
-        if type(data) != type({}):
-            raise "request data error"
-        f = urllib.urlopen(url)
-        result = json.loads(f.read())
         return result
 
 class dhuitask_type(osv.osv):

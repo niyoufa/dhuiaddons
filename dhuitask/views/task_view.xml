@@ -30,7 +30,8 @@
         <field name="inherit_id" ref="project.view_task_tree2"></field>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <field name="group_type"></field>
+                <field name="group_type">
+                </field>
             </field>
             <field name="project_id" position="replace">
                 <field name="project_id" invisible="context.get('user_invisible', False)" string="群组"/>
@@ -47,6 +48,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
         <field name="view_id" ref="dhuitask_task_tree_view"/>
+        <field name="domain">[("group_type","in",(13,14,15,16))]</field>
     </record>
     <!--定义菜单-->
     <menuitem id="menu_dhuitask" name="任务管理"/>
