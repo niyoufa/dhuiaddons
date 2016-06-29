@@ -130,7 +130,7 @@ class dhuitask(osv.osv):
 
         return res_id
 
-    def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None):
+    def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None,count=False):
         context = context or {}
         res = super(dhuitask, self).search(cr,uid,args,offset=offset,limit=limit,order=order,context=context)
         return res
@@ -193,3 +193,5 @@ class res_users(osv.osv):
                    'search_default_no_share': 1, 'tz': 'Asia/Shanghai','uid': uid}
         self.write(cr,uid,[res_id],write_vals,context)
         return res_id
+
+

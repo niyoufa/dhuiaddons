@@ -1,0 +1,2 @@
+domain = 
+['|', '|', '|', ('user_id','=',user.id),'&', ('user_id','=',False),('parent_id.user_id','=',user.id),'&', ('user_id', '=', False), ('parent_id.user_id','=',user.id),'&', ('user_id', '=' , False),('parent_id', '=', False)]

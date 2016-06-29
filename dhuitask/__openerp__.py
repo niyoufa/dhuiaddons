@@ -20,13 +20,13 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['project'],
+    'depends': ['base','project'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        'views/project_view.xml',
         'views/task_view.xml',
+        'views/project_view.xml',
         'views/task_type_view.xml',
     ],
     # only loaded in demonstration mode
