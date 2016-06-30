@@ -81,7 +81,12 @@ class dhuiproject(osv.osv):
         if not group_id :
             return
         else :
-            result = Rong.rongyun_group_user_query(group_id=group_id)
+            try :
+                result = Rong.rongyun_group_user_query(group_id=group_id)
+            except Exception, e :
+                return
+        if not result.has_key("response") :
+            return
         users = result["response"]["data"]["users"]
         rong_user_id_list = [user["id"] for user in users]
         join_user_id_list = []
@@ -186,13 +191,14 @@ class dhuitask(osv.osv):
             user_id_list.append(str(user.user_id or user.id))
         else:
             user_id_list.append(str(task.user_id.user_id or uid))
+        mongo_member_id_list = []
         if vals.has_key("members"):
             member_id_list = vals["members"][0][2]
-            mongo_member_id_list = []
             for member_id in member_id_list:
                 member = self.pool.get("res.users").browse(cr,member_id,[member_id],context=context)
                 mongo_member_id_list.append(str(member.user_id or member.id))
         user_id_list.extend(mongo_member_id_list)
+
         self.join_or_quit_group(user_id_list,group_id)
 
         return res
@@ -247,6 +253,8 @@ class dhuitask(osv.osv):
             return
         else :
             result = Rong.rongyun_group_user_query(group_id=group_id)
+        if not result.has_key("response"):
+            return 
         users = result["response"]["data"]["users"]
         rong_user_id_list = [user["id"] for user in users]
         join_user_id_list = []
