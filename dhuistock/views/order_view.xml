@@ -3,12 +3,12 @@
 
   <!--订单-->
   <record id="action_menu_dhui_order_all" model="ir.actions.act_window">
-      <field name="name">所有订单</field>
+      <field name="name">订单</field>
       <field name="res_model">sale.order</field>
   </record>
 
-  <record model="ir.ui.view" id="dhuistock_order_list">
-    <field name="name">所有订单</field>
+  <!-- <record model="ir.ui.view" id="dhuistock_order_list">
+    <field name="name">订单</field>
     <field name="model">sale.order</field>
     <field name="inherit_id" ref="sale.view_order_tree"/>
     <field name="arch" type="xml">
@@ -32,11 +32,27 @@
             <field name="pay_status"></field>
         </field>
     </field>
-  </record>
+  </record> -->
+  <record id="dhuistock_order_list" model="ir.ui.view">
+            <field name="name">sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority">2</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Orders" fonts="bold:message_unread==True" colors="grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Order Number"/>
+                    <!--<field name="date_order"/>-->
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <field name="amount_total" sum="Total Tax Included"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
 
   <!--view_order_form-->
   <record model="ir.ui.view" id="dhuistock_order_form">
-    <field name="name">所有订单</field>
+    <field name="name">订单</field>
     <field name="model">sale.order</field>
     <field name="inherit_id" ref="sale.view_order_form"/>
     <field name="arch" type="xml">
@@ -46,7 +62,7 @@
     </field>
   </record>
 
-  <record model="ir.ui.view" id="dhuistock_order_search">
+  <!-- <record model="ir.ui.view" id="dhuistock_order_search">
     <field name="name">查询订单</field>
     <field name="model">sale.order</field>
     <field name="arch" type="xml">
@@ -57,7 +73,7 @@
             <field name="order_address_id"/>
         </search>
     </field>
-  </record>
+  </record> -->
 
   <menuitem id="menu_dhui_order"
             parent="dhuistock.menu_dhui_shoppingmall"
