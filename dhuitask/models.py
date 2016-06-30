@@ -22,6 +22,7 @@ class dhuiproject(osv.osv):
         user_obj = self.pool.get('res.users')
         user = user_obj.read(cr, uid, [uid], context=context)[0]
         user_id = user['user_id'] or uid
+        pdb.set_trace()
         try:
             result = Rong.rongyun_group_create(user_id=user_id,group_id=res,group_name=group_name)
         except Exception ,e :
