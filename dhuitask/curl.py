@@ -6,13 +6,6 @@ import cookielib
 import json
 
 class CURL(object):
-    http_addr = "http://localhost:10001"
-    dhui100_api = {
-        "create":"/api/group/create",
-        "quit":"/api/group/quit",
-        "dismiss":"/api/group/dismiss",
-        "join":"/api/group/join",
-    }
 
     @classmethod
     def post(*args, **options):

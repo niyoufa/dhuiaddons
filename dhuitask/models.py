@@ -18,33 +18,102 @@ class dhuiproject(osv.osv):
     def create(self,cr,uid,vals,context=None):
         context = context or {}
         res = super(dhuiproject, self).create(cr, uid, vals, context=context)
+        group_name = vals.get("name","")
         user_obj = self.pool.get('res.users')
         user = user_obj.read(cr, uid, [uid], context=context)[0]
-        user_id = user['user_id'] or ""
+        user_id = user['user_id'] or uid
         try:
-            result = Rong.sync_rongyun_group_create(cr, user_id, vals, context,res_id=res,type="group")
+            result = Rong.rongyun_group_create(user_id=user_id,group_id=res,group_name=group_name)
         except Exception ,e :
-            print e
+            raise osv.except_osv(_('Warning!'),_("create group error: '%s'") % (str(e),))
+        
+        user_id_list = []
 
+        creator = self.pool.get("res.users").browse(cr,uid,[uid],context=context)
+        user_id_list.append(str(creator.user_id or uid))
+
+        user_id = vals["user_id"]
+        user = self.pool.get("res.users").browse(cr,int(user_id),[int(user_id)],context=context)
+        user_id_list.append(str(user.user_id or user.id))
+
+        member_id_list = vals["members"][0][2]
+        mongo_member_id_list = []
+        for member_id in member_id_list:
+            member = self.pool.get("res.users").browse(cr,member_id,[member_id],context=context)
+            mongo_member_id_list.append(str(member.user_id or member.id))
+        user_id_list.extend(mongo_member_id_list)
+        self.join_or_quit_group(user_id_list,res)
         return res
 
     def write(self,cr,uid,ids,vals,context=None):
         context = context or {}
         res = super(dhuiproject, self).write(cr,uid,ids,vals,context=context)
+        group_id = ids[0]
+        if vals.has_key("name") :
+            group_name = vals.get("name","")
+            try:
+                result = Rong.rongyun_group_refresh(group_id=group_id,group_name=group_name)
+            except Exception ,e :
+                raise osv.except_osv(_('Warning!'),_("create group error: '%s'") % (str(e),))
+
+        user_id_list = []
+        project = super(dhuiproject,self).browse(cr,uid,ids,context=context)
+        creator = self.pool.get("res.users").browse(cr,uid,[uid],context=context)
+        user_id_list.append(str(creator.user_id or uid))
+        if vals.has_key("user_id") :
+            user_id = vals["user_id"]
+            user = self.pool.get("res.users").browse(cr,int(user_id),[int(user_id)],context=context)
+            user_id_list.append(str(user.user_id or user.id))
+        else:
+            user_id_list.append(str(project.user_id.user_id or uid))
+        if vals.has_key("members"):
+            member_id_list = vals["members"][0][2]
+            mongo_member_id_list = []
+            for member_id in member_id_list:
+                member = self.pool.get("res.users").browse(cr,member_id,[member_id],context=context)
+                mongo_member_id_list.append(str(member.user_id or member.id))
+        user_id_list.extend(mongo_member_id_list)
+
+        self.join_or_quit_group(user_id_list,group_id)
         return res
+
+    def join_or_quit_group(self,user_id_list,group_id):
+        if not group_id :
+            return
+        else :
+            result = Rong.rongyun_group_user_query(group_id=group_id)
+        users = result["response"]["data"]["users"]
+        rong_user_id_list = [user["id"] for user in users]
+        join_user_id_list = []
+        quit_group_id_list = []
+        for user_id in user_id_list :
+            if user_id not in rong_user_id_list :
+                join_user_id_list.append(user_id)
+        for user_id in rong_user_id_list :
+            if user_id not in user_id_list :
+                quit_group_id_list.append(user_id)
+
+        try :
+            # join group
+            respones = [Rong.rongyun_group_join(user_id=user_id,group_id=group_id) for user_id in join_user_id_list]
+            # quit group
+            response = [Rong.rongyun_group_quit(user_id=user_id,group_id=group_id) for user_id in quit_group_id_list]
+        except Exception ,e:
+            raise osv.except_osv(_('Warning!'),_("join or quit group error: '%s'") % (str(e),))
+
+        return result
 
     def unlink(self,cr,uid,ids,context=None):
         context = context or {}
         res = super(dhuiproject,self).unlink(cr,uid,ids,context=context)
 
-        user_obj = self.pool.get('res.users')
-        user = user_obj.read(cr,uid,[uid],context=context)[0]
-        user_id = user["user_id"] or ""
+        # user_obj = self.pool.get('res.users')
+        # user = user_obj.read(cr,uid,[uid],context=context)[0]
+        # user_id = user["user_id"] or ""
         try:
-            result = Rong.sync_rongyun_group_delete(cr,user_id,ids)
+            result = Rong.rongyun_group_dismiss(user_id=uid,group_id=ids[0])
         except Exception ,e :
-            print e
-
+            raise osv.except_osv(_('Warning!'),_("dismiss group error: '%s'") % (str(e),))
         return res
 
     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None):
@@ -99,13 +168,40 @@ class dhuitask(osv.osv):
             raise osv.except_osv(_('Warning!'),_("存在任务成员不在群组: '%s'中,请选择正确的任务成员!") % (project.name,))
 
         res = super(dhuitask, self).write(cr, uid, ids, vals, context=context)
+        group_id = ids[0]
+        if vals.has_key("name") :
+            group_name = vals.get("name","")
+            try:
+                result = Rong.rongyun_group_refresh(group_id=group_id,group_name=group_name)
+            except Exception ,e :
+                raise osv.except_osv(_('Warning!'),_("create group error: '%s'") % (str(e),))
+
+        user_id_list = []
+        task = super(dhuitask,self).browse(cr,uid,ids,context=context)
+        creator = self.pool.get("res.users").browse(cr,uid,[uid],context=context)
+        user_id_list.append(str(creator.user_id or uid))
+        if vals.has_key("user_id") :
+            user_id = vals["user_id"]
+            user = self.pool.get("res.users").browse(cr,int(user_id),[int(user_id)],context=context)
+            user_id_list.append(str(user.user_id or user.id))
+        else:
+            user_id_list.append(str(task.user_id.user_id or uid))
+        if vals.has_key("members"):
+            member_id_list = vals["members"][0][2]
+            mongo_member_id_list = []
+            for member_id in member_id_list:
+                member = self.pool.get("res.users").browse(cr,member_id,[member_id],context=context)
+                mongo_member_id_list.append(str(member.user_id or member.id))
+        user_id_list.extend(mongo_member_id_list)
+        self.join_or_quit_group(user_id_list,group_id)
+
         return res
 
     def create(self, cr, uid, vals, context=None):
         context = context or {}
-        res_id = super(dhuitask, self).create(cr, uid, vals, context=context)
+        res = super(dhuitask, self).create(cr, uid, vals, context=context)
 
-        [task] = super(dhuitask,self).browse(cr,uid,[res_id])
+        [task] = super(dhuitask,self).browse(cr,uid,[res])
 
         if vals.has_key("members"):
             task_member_ids = vals["members"][0][2]
@@ -122,13 +218,54 @@ class dhuitask(osv.osv):
         
         user_obj = self.pool.get('res.users')
         user = user_obj.read(cr, uid, [uid], context=context)[0]
-        user_id = user['user_id'] or ""
+        user_id = user['user_id'] or uid
         try:
-            result = Rong.sync_rongyun_group_create(cr, user_id, vals, context,res_id=res_id,type="task")
+            result = Rong.rongyun_group_create(user_id=user_id,group_id=res,group_name=task.name)
         except Exception ,e :
-            print e
+            raise osv.except_osv(_('Warning!'),_("create group error: '%s'") % (str(e),))
 
-        return res_id
+        user_id_list = []
+
+        creator = self.pool.get("res.users").browse(cr,uid,[uid],context=context)
+        user_id_list.append(str(creator.user_id or uid))
+
+        user_id = vals["user_id"]
+        user = self.pool.get("res.users").browse(cr,int(user_id),[int(user_id)],context=context)
+        user_id_list.append(str(user.user_id or user.id))
+
+        member_id_list = vals["members"][0][2]
+        mongo_member_id_list = []
+        for member_id in member_id_list:
+            member = self.pool.get("res.users").browse(cr,member_id,[member_id],context=context)
+            mongo_member_id_list.append(str(member.user_id or member.id))
+        user_id_list.extend(mongo_member_id_list)
+        self.join_or_quit_group(user_id_list,res)
+        return res
+
+    def join_or_quit_group(self,user_id_list,group_id):
+        if not group_id :
+            return
+        else :
+            result = Rong.rongyun_group_user_query(group_id=group_id)
+        users = result["response"]["data"]["users"]
+        rong_user_id_list = [user["id"] for user in users]
+        join_user_id_list = []
+        quit_group_id_list = []
+        for user_id in user_id_list :
+            if user_id not in rong_user_id_list :
+                join_user_id_list.append(user_id)
+        for user_id in rong_user_id_list :
+            if user_id not in user_id_list :
+                quit_group_id_list.append(user_id)
+        try :
+            # join group
+            respones = [Rong.rongyun_group_join(user_id=user_id,group_id=group_id) for user_id in join_user_id_list]
+            # quit group
+            response = [Rong.rongyun_group_quit(user_id=user_id,group_id=group_id) for user_id in quit_group_id_list]
+        except Exception ,e:
+            raise osv.except_osv(_('Warning!'),_("join or quit group error: '%s'") % (str(e),))
+
+        return result
 
     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None,count=False):
         context = context or {}
@@ -139,14 +276,13 @@ class dhuitask(osv.osv):
         context = context or None
         super(dhuitask,self).unlink(cr, uid,ids,context)
 
-        user_obj = self.pool.get('res.users')
-        user = user_obj.read(cr,uid,[uid],context=context)[0]
-        user_id = user["user_id"] or ""
+        # user_obj = self.pool.get('res.users')
+        # user = user_obj.read(cr,uid,[uid],context=context)[0]
+        # user_id = user["user_id"] or ""
         try:
-            result = Rong.sync_rongyun_group_delete(cr,user_id,ids)
+            result = Rong.rongyun_group_dismiss(user_id=uid,group_id=ids[0])
         except Exception ,e :
-            print e
-
+            raise osv.except_osv(_('Warning!'),_("dismiss group error: '%s'") % (str(e),))
         return result
 
 class dhuitask_type(osv.osv):
