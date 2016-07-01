@@ -62,7 +62,7 @@ class DhuiGroup(http.Controller):
             project_task.join_group(request,uid,group_id,join_user_id_list)
         except Exception,e :
             res["code"] = status.Status.ERROR
-            res["error_info"] = e.name + e.value
+            res["error_info"] = str(e)
             return res
         return res
 
@@ -81,7 +81,7 @@ class DhuiGroup(http.Controller):
             project_task.quit_group(request,uid,group_id,join_user_id_list)
         except Exception,e :
             res["code"] = status.Status.ERROR
-            res["error_info"] = e.name + e.value
+            res["error_info"] = str(e)
             return res
         return res
 
@@ -104,7 +104,7 @@ class DhuiGroup(http.Controller):
                 return res
         except Exception, e:
             res["code"] = status.Status.ERROR
-            res["error_info"] = e.name + e.value
+            res["error_info"] = str(e)
             return res
         return res
 
@@ -140,7 +140,7 @@ class DhuiGroup(http.Controller):
                 return res
         except Exception, e:
             res["code"] = status.Status.ERROR
-            res["error_info"] = e.name + e.value
+            res["error_info"] = str(e)
             return res
         return res
 
@@ -186,7 +186,7 @@ class DhuiGroup(http.Controller):
             
         except Exception,e:
             res["code"] = status.Status.ERROR
-            res["error_info"] = e.name + e.value
+            res["error_info"] = str(e)
             return res
         return res
 
