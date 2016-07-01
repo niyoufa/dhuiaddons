@@ -91,7 +91,7 @@ class Rong(object):
         user_id = options.get("user_id",None)
         group_id = options.get("group_id",None)
         if not user_id or not group_id :
-            raise Exception("join group error : params")
+            raise Exception("quit group error : params")
 
         url = cls.get_addr("quit")
         data  ={"user_id":user_id,"group_id":group_id}
@@ -108,8 +108,3 @@ class Rong(object):
         data  ={"group_id":group_id}
         result = CURL.post(url=url, data=data)
         return result
-
-#test group create and dismiss
-def group_user_query(group_id):
-    result = Rong.rongyun_group_user_query(group_id=group_id)
-    print result

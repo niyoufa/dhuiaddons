@@ -22,7 +22,6 @@ class dhuiproject(osv.osv):
         user_obj = self.pool.get('res.users')
         user = user_obj.read(cr, uid, [uid], context=context)[0]
         user_id = user['user_id'] or uid
-        pdb.set_trace()
         try:
             result = Rong.rongyun_group_create(user_id=user_id,group_id=res,group_name=group_name)
         except Exception ,e :
@@ -141,7 +140,7 @@ class dhuitask(osv.osv):
     }
 
     def onchange_members(self,cr,uid,ids,members,context=None):
-        # [(6, 0, [5186, 4533, 4247])]
+        return
         if len(members) == 0 :
             return
         if len(members[0][2]) == 0:
@@ -209,7 +208,6 @@ class dhuitask(osv.osv):
         res = super(dhuitask, self).create(cr, uid, vals, context=context)
 
         [task] = super(dhuitask,self).browse(cr,uid,[res])
-
         if vals.has_key("members"):
             task_member_ids = vals["members"][0][2]
         else :
@@ -254,9 +252,9 @@ class dhuitask(osv.osv):
             return
         else :
             result = Rong.rongyun_group_user_query(group_id=group_id)
-        if not result.has_key("response"):
-            return 
-        users = result["response"]["data"]["users"]
+        if not result.has_key("data"):
+            return
+        users = result["data"]["users"]
         rong_user_id_list = [user["id"] for user in users]
         join_user_id_list = []
         quit_group_id_list = []
@@ -275,6 +273,69 @@ class dhuitask(osv.osv):
             raise osv.except_osv(_('Warning!'),_("join or quit group error: '%s'") % (str(e),))
 
         return result
+
+    def join_group(self,request,uid,group_id,join_user_id_list,context=None):
+        if not group_id or not type(join_user_id_list) == type([]) :
+            return
+        join_users = request.registry("res.users").search_read(request.cr,uid,[["user_id","=",join_user_id_list[0]]])
+        join_user_id_list = []
+        join_user_dict = {}
+        for join_user in join_users :
+            join_user_id_list.append(join_user["id"])
+            join_user_dict[join_user["id"]] = str(join_user["user_id"])
+
+        task = request.registry("project.task").browse(request.cr,uid,[group_id])
+        task_create_uid= int(task.create_uid)
+        task_user_id = int(task.user_id)
+        members = task.members
+        member_id_list = [member.id for member in members]
+
+        project = task.project_id
+        project_members = project.members
+        project_member_ids = [ member.id for member in project_members]
+
+        temp_join_user_id_list = []
+        for user_id in join_user_id_list :
+            if user_id == task_create_uid or user_id == task_user_id :
+                raise Exception("operation limit")
+            elif user_id in member_id_list:
+                raise Exception("has join group")
+            elif user_id not in project_member_ids :
+                raise Exception("has not access to this group")
+            else :
+                response = Rong.rongyun_group_join(user_id = join_user_dict[user_id],group_id=group_id)
+                request.cr.execute("insert into project_task_rel(task_id,uid) values(%s,%s)"%(group_id,user_id))
+        request.cr.commit()
+
+    def quit_group(self,request,uid,group_id,quit_user_id_list,context=None):
+        if not group_id or not type(quit_user_id_list) == type([]) :
+            return
+        quit_users = request.registry("res.users").search_read(request.cr,uid,[["user_id","=",quit_user_id_list[0]]])
+        quit_user_id_list = []
+        quit_user_dict = {}
+        for quit_user in quit_users :
+            quit_user_id_list.append(quit_user["id"])
+            quit_user_dict[quit_user["id"]] = quit_user["user_id"]
+
+        try :
+            task = request.registry("project.task").browse(request.cr,uid,[group_id])
+            task_create_uid= int(task.create_uid)
+            task_user_id = int(task.user_id)
+            members = task.members
+            member_id_list = [member.id for member in members]
+        except Exception ,e:
+            raise Exception("params error")
+
+        temp_quit_user_id_list = []
+        for user_id in quit_user_id_list :
+            if user_id == task_create_uid or user_id == task_user_id :
+                raise Exception("operation limit")
+            elif user_id  not in member_id_list :
+                raise Exception("is not group memmber")
+            else :
+                response = Rong.rongyun_group_quit(user_id =quit_user_dict[user_id] ,group_id=group_id)
+                request.cr.execute("delete from project_task_rel where uid=\'%s\' and  task_id=\'%s\'"%(user_id,group_id))
+        request.cr.commit()
 
     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None,count=False):
         context = context or {}
