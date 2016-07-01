@@ -324,7 +324,7 @@ class dhuitask(osv.osv):
             members = task.members
             member_id_list = [member.id for member in members]
         except Exception ,e:
-            raise Exception(e.value)
+            raise Exception(str(e))
 
         temp_quit_user_id_list = []
         for user_id in quit_user_id_list :
