@@ -1,0 +1,50 @@
+<openerp>
+ <data>
+
+    <!--定义表单视图-->
+    <record model="ir.ui.view" id="dhui_crm_communicate_form_view">
+        <field name="name">沟通记录表单</field>
+        <field name="type">form</field>
+        <field name="model">crm.phonecall</field>
+        <field name="inherit_id" ref="crm.crm_case_phone_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[@class='oe_right oe_button_box']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <field name="user_id" position="replace">
+                <field name="user_id" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'base.group_sale_salesman_all_leads']}" string="客服"/>
+            </field>
+
+            <field name="partner_id" position="replace">
+                <field name="partner_id" on_change="on_change_partner_id(partner_id)" string="客户"/>
+            </field>
+        </field>
+    </record>
+    <!--定义列表视图-->
+    <record model="ir.ui.view" id="dhui_crm_communicate_tree_view">
+        <field name="name">沟通记录列表</field>
+        <field name="type">tree</field>
+        <field name="model">crm.phonecall</field>
+        <field name="inherit_id" ref="crm.crm_case_phone_tree_view"></field>
+        <field name="arch" type="xml">
+            <field name="user_id" position="replace">
+                <field name="user_id" string="客服"/>
+            </field>
+            <field name="partner_id" position="replace">
+                <field name="partner_id" on_change="on_change_partner_id(partner_id)" string="客户"/>
+            </field>
+        </field>
+    </record>
+    <!--定义视图动作-->
+    <record model="ir.actions.act_window"  id="action_dhui_crm_communicate">
+        <field name="name">沟通回访</field>    <!--这个字符串即课程对应列表或编辑界面的标题-->
+        <field name="res_model">crm.phonecall</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="dhui_crm_communicate_tree_view"/>
+    </record>
+    <!--定义菜单-->
+    <menuitem id="dhui_crm_commuticate_item_menu" name="沟通回访" parent="menu_dhui_crm_lead" action="action_dhui_crm_communicate"/>
+ </data>
+</openerp>

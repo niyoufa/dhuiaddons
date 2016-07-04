@@ -1,0 +1,122 @@
+<openerp>
+ <data>
+
+    <!--定义表单视图-->
+    <record model="ir.ui.view" id="dhui_crm_lead_form_view">
+        <field name="name">电话记录表单</field>
+        <field name="type">form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+        <field name="arch" type="xml">
+                <xpath expr="//header/button" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//sheet/div/h1/field[@name='name']" position="replace">
+                    <field name="name" placeholder="主题"></field>
+                </xpath>
+                <xpath expr="//sheet/div/label[@for='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//group/label[@for='contact_name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//sheet/group/group[2]/div/span" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='contact_name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//sheet/group/group[2]/div" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//sheet/group/group[3]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//sheet/div/button/div" position="replace">
+                    <div>沟通/回访</div>
+                </xpath>
+
+                <xpath expr="//group[1]" position="after">
+                    <group>
+                        <field name="user_id" string="客服"></field>
+                    </group>
+                </xpath>
+
+                <xpath expr="//group[4]" position="replace">
+                    <group>
+                        <field name="priority"/>
+                        <field name="categ_ids" string="通话类型"
+                            widget="many2many_tags"/>
+                    </group>
+                </xpath>
+
+                
+                <xpath expr="//field[@name='partner_name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+
+                <xpath expr="//field[@name='city']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='state_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='zip']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='country_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='email_from']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='function']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='mobile']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='fax']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//page[@string='Extra Info']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+        </field>
+    </record>
+    <!--定义列表视图-->
+    <record model="ir.ui.view" id="dhui_crm_lead_tree_view">
+        <field name="name">电话记录列表</field>
+        <field name="type">tree</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_leads"></field>
+        <field name="arch" type="xml">
+            <field name="country_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="contact_name" position="replace">
+                <field name="contact_name" string="访客姓名"/>
+            </field>
+        </field>
+    </record>
+    <!--定义视图动作-->
+    <record model="ir.actions.act_window"  id="action_dhui_crm_lead">
+        <field name="name">电话记录</field>    <!--这个字符串即课程对应列表或编辑界面的标题-->
+        <field name="res_model">crm.lead</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="dhui_crm_lead_tree_view"/>
+    </record>
+    <!--定义菜单-->
+    <menuitem id="menu_dhui_crm_lead" parent="dhuistock.menu_dhui_shoppingmall"
+                name="客服管理"/>
+    <menuitem id="dhui_crm_lead_item_menu" name="访客记录" parent="menu_dhui_crm_lead" action="action_dhui_crm_lead"/>
+ </data>
+</openerp>
