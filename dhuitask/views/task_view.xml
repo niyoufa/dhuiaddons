@@ -48,7 +48,6 @@
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
         <field name="view_id" ref="dhuitask_task_tree_view"/>
-        <field name="domain">[("group_type","in",(13,14,15,16))]</field>
     </record>
     <!--定义菜单-->
     <menuitem id="menu_dhuitask" name="任务管理"/>

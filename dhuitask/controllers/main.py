@@ -190,4 +190,44 @@ class DhuiGroup(http.Controller):
             return res
         return res
 
+    @http.route('/odoo/api/task/create',type='http')
+    @serialize_exception
+    def create_group(self,**kw):
+        res = utils.init_response_data()
+        try :
+            name = kw.get("name","")
+        except Exception ,e :
+            res["code"] = status.Status.ERROR
+            res["error_info"] = str(e)
+            return res
+        project_task = request.registry("project.task")
+        uid = request.uid
+        vals = {
+                'message_follower_ids': False,
+                'sequence': 10, 
+                'date_end': False, 
+                'planned_hours': 0,
+                'partner_id': False, 
+                'message_ids': False,
+                'user_id': 1, 
+                'date_start': '2016-07-08 10:15:04', 
+                'company_id': 1,
+                'priority': '0',
+                'project_id': False,
+                'date_last_stage_update': '2016-07-08 10:15:04',
+                'group_type': False,
+                'description': False,
+                'kanban_state': 'normal',
+                'child_ids': [[6, False, []]], 
+                'work_ids': [],
+                'parent_ids': [[6, False, []]], 
+                'members': [[6, False, []]],
+                'stage_id': 1, 
+                'name': 'fdsfdsf', 
+                'date_deadline': False, 
+                'remaining_hours': 0
+        }
+        project_task.create(request.cr,uid,vals)
+        return res
+
 

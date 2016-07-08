@@ -204,6 +204,7 @@ class dhuitask(osv.osv):
         return res
 
     def create(self, cr, uid, vals, context=None):
+        pdb.set_trace()
         context = context or {}
         res = super(dhuitask, self).create(cr, uid, vals, context=context)
 
